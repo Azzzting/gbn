@@ -1,8 +1,9 @@
 package main
 
 import (
-	bn254 "demo/Desktop/f/include"
 	"fmt"
+
+	bn254 "github.com/Azzzting/gbn/include"
 )
 
 func test_fp() {

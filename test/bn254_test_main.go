@@ -6,19 +6,219 @@ import (
 	bn254 "github.com/Azzzting/gbn/include"
 )
 
-func test_fp() {
-	fmt.Printf("test_fp......\n")
-	hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
-	hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+func test_bn(hex_a string, hex_b string) {
+	//hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	//hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	a := make([]uint32, 8)
+	b := make([]uint32, 8)
+	r := make([]uint32, 16)
+	bn254.BN_from_hex(a, 8, hex_a)
+	bn254.BN_from_hex(b, 8, hex_b)
+	bn254.BN_print(" a = ", a, 8)
+	bn254.BN_print(" b = ", b, 8)
+	//test BN_add
+	bn254.BN_add(r, a, b, 8)
+	bn254.BN_print(" a + b = ", r, 8)
+	//test BN_sub
+	bn254.BN_sub(r, a, b, 8)
+	bn254.BN_print(" a - b = ", r, 8)
+	bn254.BN_sub(r, b, a, 8)
+	bn254.BN_print(" b - a = ", r, 8)
+	//test mul_lo
+	bn254.BN_mul_lo(r, a, b, 8)
+	bn254.BN_print(" a * b (mod 2^256) = ", r, 8)
+	//mul
+	bn254.BN_mul(r, a, b, 8)
+	bn254.BN_print(" a * b = ", r, 16)
+}
 
-	hex_fp_add_a_b := "1befa71cbccf15f1b86fc535f2cff36a01e50692e41e37f6051fd274038f069c"
-	hex_fp_sub_a_b := "2a5513860fc876382d0c7108e455c5b4ccd993da773a9cb5df66c4e2fd7f5309"
-	hex_fp_sub_b_a := "060f3aecd16929f18b43d4ad9d2b92a8caa7d6b6f1372dd75cb9c733dafdaa3e"
-	hex_fp_neg_a := "2574185aeb7eaa29a1ba4d7256af27fcfbe2d2a36efe457de7ed8676c4344f18"
-	hex_fp_mul_a_b := "26233c6c1df2a1b4fec81ed8a1a4fb2450a06a8adf3576d183a9f2b87b6d2b72"
-	hex_fp_sqr_a := "13b887f45214e1eed372c7b44bd4a7a8d60518114e10c581176cba7fdeccd283"
+func test_bn_mod(hex_a string, hex_b string) {
+	//hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	//hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	hex_n := "30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001"
+	a := make([]uint32, 8)
+	b := make([]uint32, 8)
+	n := make([]uint32, 8)
+	r := make([]uint32, 16)
+
+	bn254.BN_from_hex(a, 8, hex_a)
+	bn254.BN_from_hex(b, 8, hex_b)
+	bn254.BN_from_hex(n, 8, hex_n)
+
+	bn254.BN_print(" a = ", a, 8)
+	bn254.BN_print(" b = ", b, 8)
+	bn254.BN_print(" n = ", n, 8)
+
+	bn254.BN_mod_add_non_const_time(r, a, b, n, 8)
+	bn254.BN_print(" a + b (mod n) = ", r, 8)
+
+	bn254.BN_mod_sub_non_const_time(r, a, b, n, 8)
+	bn254.BN_print(" a - b (mod n) = ", r, 8)
+
+	bn254.BN_mod_sub_non_const_time(r, b, a, n, 8)
+	bn254.BN_print(" b - a (mod n) = ", r, 8)
+
+	bn254.BN_mod_neg(r, a, n, 8)
+	bn254.BN_print(" -a (mod n) = ", r, 8)
+}
+
+func test_bn_barrett(hex_a string, hex_b string) {
+
+	//hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	//hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	hex_p := "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47"
+	hex_n := "30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001"
+	hex_p_mu := "000000054a47462623a04a7ab074a5868073013ae965e1767cd4c086f3aed8a19bf90e51"
+	hex_n_mu := "000000054a47462623a04a7ab074a58680730147144852009e880ae620703a6be1de9259"
+	a := make([]uint32, 8)
+	b := make([]uint32, 8)
+	n := make([]uint32, 8)
+	r := make([]uint32, 8)
+	p := make([]uint32, 8)
+	p_mu := make([]uint32, 9)
+	n_mu := make([]uint32, 9)
+	bn254.BN_from_hex(a, 8, hex_a)
+	bn254.BN_from_hex(b, 8, hex_b)
+	bn254.BN_from_hex(p, 8, hex_p)
+	bn254.BN_from_hex(p_mu, 9, hex_p_mu)
+	bn254.BN_from_hex(n, 8, hex_n)
+	bn254.BN_from_hex(n_mu, 9, hex_n_mu)
+
+	bn254.BN_print(" a = ", a, 8)
+	bn254.BN_print(" b = ", b, 8)
+	bn254.BN_print(" p = ", n, 8)
+	bn254.BN_print(" mu(p) = ", n_mu, 9)
+
+	bn254.BN_barrett_mod_mul(r, a, b, p, p_mu, 8)
+	bn254.BN_print(" a * b (mod p) = ", r, 8)
+	bn254.BN_barrett_mod_sqr(r, a, p, p_mu, 8)
+	bn254.BN_print(" a^2 (mod p) = ", r, 8)
+	bn254.BN_barrett_mod_exp(r, a, b, p, p_mu, 8)
+	bn254.BN_print(" a^b (mod p) = ", r, 8)
+	bn254.BN_barrett_mod_inv(r, a, p, p_mu, 8)
+	bn254.BN_print(" a^-1 (mod p) = ", r, 8)
+	bn254.BN_barrett_mod_mul(r, a, b, n, n_mu, 8)
+	bn254.BN_print(" a * b (mod n) = ", r, 8)
+	bn254.BN_barrett_mod_sqr(r, a, n, n_mu, 8)
+	bn254.BN_print(" a^2 (mod n) = ", r, 8)
+	bn254.BN_barrett_mod_exp(r, a, b, n, n_mu, 8)
+	bn254.BN_print(" a^b (mod n) = ", r, 8)
+	bn254.BN_barrett_mod_inv(r, a, n, n_mu, 8)
+	bn254.BN_print(" a^-1 (mod n) = ", r, 8)
+}
+
+func test_bn_montgomery(hex_a string, hex_b string) {
+
+	//hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	//hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	hex_p := "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47"
+	hex_n := "30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001"
+	hex_p_inv_neg := "f57a22b791888c6bd8afcbd01833da809ede7d651eca6ac987d20782e4866389"
+	hex_p_one_sqr := "06d89f71cab8351f47ab1eff0a417ff6b5e71911d44501fbf32cfc5b538afa89"
+	hex_n_inv_neg := "73f82f1d0d8341b2e39a9828990623916586864b4c6911b3c2e1f593efffffff"
+	hex_n_one_sqr := "0216d0b17f4e44a58c49833d53bb808553fe3ab1e35c59e31bb8e645ae216da7"
+	a := make([]uint32, 8)
+	b := make([]uint32, 8)
+	n := make([]uint32, 8)
+	r := make([]uint32, 8)
+	p := make([]uint32, 8)
+	p_inv_neg := make([]uint32, 8)
+	p_one_sqr := make([]uint32, 8)
+	n_inv_neg := make([]uint32, 8)
+	n_one_sqr := make([]uint32, 8)
+
+	bn254.BN_from_hex(a, 8, hex_a)
+	bn254.BN_from_hex(b, 8, hex_b)
+	bn254.BN_from_hex(p, 8, hex_p)
+	bn254.BN_from_hex(p_inv_neg, 8, hex_p_inv_neg)
+	bn254.BN_from_hex(p_one_sqr, 8, hex_p_one_sqr)
+
+	bn254.BN_print(" a = ", a, 8)
+	bn254.BN_print(" b = ", b, 8)
+	bn254.BN_print(" p = ", p, 8)
+
+	bn254.BN_mod_mul_montgomery(r, a, b, p_one_sqr, p, p_inv_neg, 8)
+	bn254.BN_print(" a * b (mod p) = ", r, 8)
+
+	bn254.BN_mod_sqr_montgomery(r, a, p_one_sqr, p, p_inv_neg, 8)
+	bn254.BN_print(" a^2 (mod p) = ", r, 8)
+
+	bn254.BN_from_hex(n, 8, hex_n)
+	bn254.BN_from_hex(n_inv_neg, 8, hex_n_inv_neg)
+	bn254.BN_from_hex(n_one_sqr, 8, hex_n_one_sqr)
+
+	bn254.BN_print(" n = ", n, 8)
+
+	bn254.BN_mod_mul_montgomery(r, a, b, n_one_sqr, n, n_inv_neg, 8)
+	bn254.BN_print(" a * b (mod n) = ", r, 8)
+
+	bn254.BN_mod_sqr_montgomery(r, a, n_one_sqr, n, n_inv_neg, 8)
+	bn254.BN_print(" a^2 (mod n) = ", r, 8)
+}
+
+func test_fn(hex_a string, hex_b string) {
+	//hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	//hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	a := make([]uint32, 8)
+	b := make([]uint32, 8)
+	r := make([]uint32, 8)
+	bn254.BN_from_hex(a, 8, hex_a)
+	bn254.BN_from_hex(b, 8, hex_b)
+	bn254.BN_print(" a = ", a, 8)
+	bn254.BN_print(" b = ", b, 8)
+	bn254.BN_print(" n = ", bn254.BN254_n[:], 8)
+
+	bn254.FN_from_hex(a, hex_a)
+	bn254.FN_from_hex(b, hex_b)
+	bn254.FN_add(r, a, b)
+	bn254.FN_get_BN(r, r)
+	bn254.BN_print(" a + b (mod n) = ", r, 8)
+
+	bn254.FN_sub(r, a, b)
+	bn254.FN_get_BN(r, r)
+	bn254.BN_print(" a - b (mod n) = ", r, 8)
+
+	bn254.FN_sub(r, b, a)
+	bn254.FN_get_BN(r, r)
+	bn254.BN_print(" b - a (mod n) = ", r, 8)
+
+	bn254.FN_neg(r, a)
+	bn254.FN_get_BN(r, r)
+	bn254.BN_print(" -a (mod p) = ", r, 8)
+
+	bn254.FN_mul(r, a, b)
+	bn254.FN_get_BN(r, r)
+	bn254.BN_print(" a * b (mod n) = ", r, 8)
+
+	bn254.FN_sqr(r, a)
+	bn254.FN_get_BN(r, r)
+	bn254.BN_print(" a^2 (mod n) = ", r, 8)
+
+	var a_fn bn254.FN_t
+	for i := 0; i < len(a); i++ {
+		a_fn[i] = a[i]
+	}
+	var r_fn bn254.FN_t
+	for i := 0; i < len(r); i++ {
+		r_fn[i] = r[i]
+	}
+	bn254.FN_inv(&r_fn, a_fn)
+	bn254.FN_get_bn(r_fn[:], r_fn[:])
+	bn254.BN_print(" a^-1 (mod n) = ", r_fn[:], 8)
+}
+
+func test_fp(hex_a string, hex_b string) {
+	//hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	//hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+
+	//hex_fp_add_a_b := "1befa71cbccf15f1b86fc535f2cff36a01e50692e41e37f6051fd274038f069c"
+	//hex_fp_sub_a_b := "2a5513860fc876382d0c7108e455c5b4ccd993da773a9cb5df66c4e2fd7f5309"
+	//hex_fp_sub_b_a := "060f3aecd16929f18b43d4ad9d2b92a8caa7d6b6f1372dd75cb9c733dafdaa3e"
+	//hex_fp_neg_a := "2574185aeb7eaa29a1ba4d7256af27fcfbe2d2a36efe457de7ed8676c4344f18"
+	//hex_fp_mul_a_b := "26233c6c1df2a1b4fec81ed8a1a4fb2450a06a8adf3576d183a9f2b87b6d2b72"
+	//hex_fp_sqr_a := "13b887f45214e1eed372c7b44bd4a7a8d60518114e10c581176cba7fdeccd283"
 	//hex_fp_exp_a_b := "09223b41c088f253f48bcd362e406afe59f49bcff34cb9e1ce5d910c38f06476"
-	hex_fp_inv_a := "1c247c36f20b94c90c886532c309246addd378f27906754263f7af21d12a71a7"
+	//hex_fp_inv_a := "1c247c36f20b94c90c886532c309246addd378f27906754263f7af21d12a71a7"
 
 	a := make([]uint32, 8)
 	b := make([]uint32, 8)
@@ -36,32 +236,32 @@ func test_fp() {
 	bn254.FP_add(r, a, b)
 	bn254.FP_get_BN(r, r)
 	bn254.BN_print(" a + b (mod p) = ", r, 8)
-	fmt.Printf("               = %s\n", hex_fp_add_a_b)
+	//fmt.Printf("               = %s\n", hex_fp_add_a_b)
 
 	bn254.FP_sub(r, a, b)
 	bn254.FP_get_BN(r, r)
 	bn254.BN_print(" a - b (mod p) = ", r, 8)
-	fmt.Printf("               = %s\n", hex_fp_sub_a_b)
+	//fmt.Printf("               = %s\n", hex_fp_sub_a_b)
 
 	bn254.FP_sub(r, b, a)
 	bn254.FP_get_BN(r, r)
 	bn254.BN_print(" b - a (mod p) = ", r, 8)
-	fmt.Printf("               = %s\n", hex_fp_sub_b_a)
+	//fmt.Printf("               = %s\n", hex_fp_sub_b_a)
 
 	bn254.FP_neg(r, a)
 	bn254.FP_get_BN(r, r)
 	bn254.BN_print(" -a (mod p) = ", r, 8)
-	fmt.Printf("            = %s\n", hex_fp_neg_a)
+	//fmt.Printf("            = %s\n", hex_fp_neg_a)
 
 	bn254.FP_mul(r, a, b)
 	bn254.FP_get_BN(r, r)
 	bn254.BN_print(" a * b (mod p) = ", r, 8)
-	fmt.Printf("               = %s\n", hex_fp_mul_a_b)
+	//fmt.Printf("               = %s\n", hex_fp_mul_a_b)
 
 	bn254.FP_sqr(r, a)
 	bn254.FP_get_BN(r, r)
 	bn254.BN_print(" a^2 (mod p) = ", r, 8)
-	fmt.Printf("             = %s\n", hex_fp_sqr_a)
+	//fmt.Printf("             = %s\n", hex_fp_sqr_a)
 
 	var a_fp bn254.FP_t
 	for i := 0; i < len(a); i++ {
@@ -75,21 +275,20 @@ func test_fp() {
 	bn254.FP_inv(&r_fp, a_fp)
 	bn254.FP_get_BN(r_fp[:], r_fp[:])
 	bn254.BN_print(" a^-1 (mod p) = ", r_fp[:], 8)
-	fmt.Printf("              = %s\n", hex_fp_inv_a)
+	//fmt.Printf("              = %s\n", hex_fp_inv_a)
 
 }
 
-func test_point() {
-	fmt.Printf("test_point......\n")
-	hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+func test_point(hex_a string) {
+	//hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
 	hex_G1 := "0000000000000000000000000000000000000000000000000000000000000001" +
 		"0000000000000000000000000000000000000000000000000000000000000002"
-	hex_2G1 := "030644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd3" +
-		"15ed738c0e0a7c92e7845f96b2ae9c0a68a6a449e3538fc7ff3ebf7a5a18a2c4"
-	hex_3G1 := "0769bf9ac56bea3ff40232bcb1b6bd159315d84715b8e679f2d355961915abf0" +
-		"2ab799bee0489429554fdb7c8d086475319e63b40b9c5b57cdf1ff3dd9fe2261"
-	hex_aG1 := "06dddf2da5ec0ed18248eb78d2fa3b06d371ddc479ed7d7e0fc932d551d1b054" +
-		"1c9dfe0f9d67a2c33cb4b4e62e5e2e4ae70a2cc746e4e3d368d59918a0f0de4f"
+	//hex_2G1 := "030644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd3" +
+	//	"15ed738c0e0a7c92e7845f96b2ae9c0a68a6a449e3538fc7ff3ebf7a5a18a2c4"
+	//hex_3G1 := "0769bf9ac56bea3ff40232bcb1b6bd159315d84715b8e679f2d355961915abf0" +
+	//	"2ab799bee0489429554fdb7c8d086475319e63b40b9c5b57cdf1ff3dd9fe2261"
+	//hex_aG1 := "06dddf2da5ec0ed18248eb78d2fa3b06d371ddc479ed7d7e0fc932d551d1b054" +
+	//	"1c9dfe0f9d67a2c33cb4b4e62e5e2e4ae70a2cc746e4e3d368d59918a0f0de4f"
 
 	var BN254_G1 = bn254.Point_t{
 		X: [8]uint32{0xc58f0d9d, 0xd35d438d, 0xf5c70b3d, 0x0a78eb28,
@@ -111,15 +310,15 @@ func test_point() {
 	bn254.Point_from_hex(&G1, hex_G1)
 	bn254.Point_print(" G1 = ", &G1)
 	bn254.Point_print("    = ", &BN254_G1)
-	fmt.Printf("        = %s\n", hex_G1)
+	//fmt.Printf("        = %s\n", hex_G1)
 
 	bn254.Point_dbl(&P, &G1)
 	bn254.Point_print(" 2 * G1 = ", &P)
-	fmt.Printf("        = %s\n", hex_2G1)
+	//fmt.Printf("        = %s\n", hex_2G1)
 
 	bn254.Point_add(&P, &P, &G1)
 	bn254.Point_print(" 3 * G1 = ", &P)
-	fmt.Printf("        = %s\n", hex_3G1)
+	//fmt.Printf("        = %s\n", hex_3G1)
 
 	affineG1 := bn254.Affine_point_t{
 		X: G1.X,
@@ -132,31 +331,23 @@ func test_point() {
 	bn254.Point_mul_affine_const_time(&P, a[:], &affineG1)
 	bn254.Point_print("        = ", &P)
 
-	fmt.Printf("        = %s\n", hex_aG1)
+	//fmt.Printf("        = %s\n", hex_aG1)
 
 	bn254.Point_mul_generator(&P, a[:])
 	bn254.Point_print("        = ", &P)
 
 }
 
-func test_point_multi_mul() {
-	fmt.Printf("test_point_multi_mul......\n")
+func test_point_multi_mul(a [8]bn254.FN_t) {
 	x := [8]int{1, 2, 4, 8, 16, 32, 64, 128}
 
 	var P [8]*bn254.Point_t
 	var T [255]*bn254.Point_t
 	var R bn254.Point_t
-	var a [8]bn254.FN_t
+	//var a [8]bn254.FN_t
 
 	for i := 0; i < 255; i++ {
 		T[i] = new(bn254.Point_t)
-	}
-
-	for i := 0; i < 8; i++ {
-		for j := 0; j < 8; j++ {
-			// 为数组中的每个元素分配值
-			a[i][j] = uint32(i*8 + j + 1)
-		}
 	}
 
 	for i := 0; i < 8; i++ {
@@ -180,8 +371,7 @@ func test_point_multi_mul() {
 	bn254.Point_print("R = ", &R)
 }
 
-func test_poly() {
-	fmt.Printf("test_poly......\n")
+func test_poly(hex_a string) {
 	hex_fa0 := "24beb63b9dac49a8be446e8023e90219bb327ee5e8f49485565703b60a64756b"
 	hex_fa1 := "12197fdb7a5989d8d22b33b8605aa067e2bd285bc9e109a309fb71af74715ace"
 	hex_fa2 := "0f141a426378638a8968a408f912be2bead6116ca53a59d735792ad68d49ee9b"
@@ -216,7 +406,7 @@ func test_poly() {
 	hex_fb14 := "1d512b84553f12ed786c46668d1006f7ad111ce484bc25435a524fd3b260a697"
 	hex_fb15 := "0c6ee93a932f8591c5da3a6d3876040ef8b396c3463b8c0e39ab1632c1d28946"
 
-	hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	//hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
 
 	fa := bn254.Poly_New(16 + 4)
 	fb := bn254.Poly_New(16 + 4)
@@ -310,7 +500,7 @@ func test_poly() {
 }
 
 func test_fft() {
-	fmt.Printf("test_fft......\n")
+
 	hex_fa0 := "24beb63b9dac49a8be446e8023e90219bb327ee5e8f49485565703b60a64756b"
 	hex_fa1 := "12197fdb7a5989d8d22b33b8605aa067e2bd285bc9e109a309fb71af74715ace"
 	hex_fa2 := "0f141a426378638a8968a408f912be2bead6116ca53a59d735792ad68d49ee9b"
@@ -390,205 +580,83 @@ func test_fft() {
 	bn254.Poly_print("a = ", a, 16)
 }
 
-func test_bn() {
-	hex_a := "aaf03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
-	hex_b := "aaf03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
-	a := make([]uint32, 8)
-	b := make([]uint32, 8)
-	r := make([]uint32, 16)
-	bn254.BN_from_hex(a, 8, hex_a)
-	bn254.BN_from_hex(b, 8, hex_b)
-	bn254.BN_print(" a = ", a, 8)
-	bn254.BN_print(" b = ", b, 8)
-	//test BN_add
-	bn254.BN_add(r, a, b, 8)
-	bn254.BN_print(" r = ", r, 8)
-	//test BN_sub
-	bn254.BN_sub(r, a, b, 8)
-	bn254.BN_print(" r = ", r, 8)
-	//test mul_lo
-	bn254.BN_mul_lo(r, a, b, 8)
-	bn254.BN_print(" r = ", r, 8)
-	//mul
-	bn254.BN_mul(r, a, b, 8)
-	bn254.BN_print(" r = ", r, 16)
-}
-
-func test_bn_mod() {
-	hex_a := "aaf03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
-	hex_b := "aaf03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
-	hex_n := "30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001"
-	a := make([]uint32, 8)
-	b := make([]uint32, 8)
-	n := make([]uint32, 8)
-	r := make([]uint32, 16)
-
-	bn254.BN_from_hex(a, 8, hex_a)
-	bn254.BN_from_hex(b, 8, hex_b)
-	bn254.BN_from_hex(n, 8, hex_n)
-
-	bn254.BN_print(" a = ", a, 8)
-	bn254.BN_print(" b = ", b, 8)
-	bn254.BN_print(" n = ", n, 8)
-
-	bn254.BN_mod_add_non_const_time(r, a, b, n, 8)
-	bn254.BN_print(" a + b (mod n) = ", r, 8)
-
-	bn254.BN_mod_sub_non_const_time(r, a, b, n, 8)
-	bn254.BN_print(" a - b (mod n) = ", r, 8)
-
-	bn254.BN_mod_neg(r, a, n, 8)
-	bn254.BN_print(" -a (mod n) = ", r, 8)
-}
-
-func test_bn_barrett() {
-	hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
-	hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
-	hex_p := "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47"
-	hex_n := "30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001"
-	hex_p_mu := "000000054a47462623a04a7ab074a5868073013ae965e1767cd4c086f3aed8a19bf90e51"
-	hex_n_mu := "000000054a47462623a04a7ab074a58680730147144852009e880ae620703a6be1de9259"
-	a := make([]uint32, 8)
-	b := make([]uint32, 8)
-	n := make([]uint32, 8)
-	r := make([]uint32, 8)
-	p := make([]uint32, 8)
-	p_mu := make([]uint32, 9)
-	n_mu := make([]uint32, 9)
-	bn254.BN_from_hex(a, 8, hex_a)
-	bn254.BN_from_hex(b, 8, hex_b)
-	bn254.BN_from_hex(p, 8, hex_p)
-	bn254.BN_from_hex(p_mu, 9, hex_p_mu)
-	bn254.BN_from_hex(n, 8, hex_n)
-	bn254.BN_from_hex(n_mu, 9, hex_n_mu)
-
-	bn254.BN_print(" a = ", a, 8)
-	bn254.BN_print(" b = ", b, 8)
-	bn254.BN_print(" p = ", n, 8)
-	bn254.BN_print(" mu(p) = ", n_mu, 9)
-
-	bn254.BN_barrett_mod_mul(r, a, b, p, p_mu, 8)
-	bn254.BN_print(" a * b (mod p) = ", r, 8)
-	bn254.BN_barrett_mod_sqr(r, a, p, p_mu, 8)
-	bn254.BN_print(" a^2 (mod p) = ", r, 8)
-	// bn254.BN_barrett_mod_exp(r, a, b, p, p_mu, 8)
-	// bn254.BN_print(" a^b (mod p) = ", r, 8)
-	// bn254.BN_barrett_mod_inv(r, a, p, p_mu, 8)
-	// bn254.BN_print(" a^-1 (mod p) = ", r, 8)
-	bn254.BN_barrett_mod_mul(r, a, b, n, n_mu, 8)
-	bn254.BN_print(" a * b (mod n) = ", r, 8)
-	bn254.BN_barrett_mod_sqr(r, a, n, n_mu, 8)
-	bn254.BN_print(" a^2 (mod n) = ", r, 8)
-	// bn254.BN_barrett_mod_exp(r, a, b, n, n_mu, 8)
-	// bn254.BN_print(" a^b (mod n) = ", r, 8)
-}
-
-// func test_bn_montgomery() {
-// 	hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
-// 	hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
-// 	hex_p := "30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47"
-// 	hex_n := "30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001"
-// 	hex_p_inv_neg := "f57a22b791888c6bd8afcbd01833da809ede7d651eca6ac987d20782e4866389"
-// 	hex_p_one_sqr := "06d89f71cab8351f47ab1eff0a417ff6b5e71911d44501fbf32cfc5b538afa89"
-// 	hex_n_inv_neg := "73f82f1d0d8341b2e39a9828990623916586864b4c6911b3c2e1f593efffffff"
-// 	hex_n_one_sqr := "0216d0b17f4e44a58c49833d53bb808553fe3ab1e35c59e31bb8e645ae216da7"
-// 	a := make([]uint32, 8)
-// 	b := make([]uint32, 8)
-// 	n := make([]uint32, 8)
-// 	r := make([]uint32, 8)
-// 	p := make([]uint32, 8)
-// 	p_inv_neg := make([]uint32, 8)
-// 	p_one_sqr := make([]uint32, 8)
-// 	n_inv_neg := make([]uint32, 8)
-// 	n_one_sqr := make([]uint32, 8)
-
-// 	bn254.BN_from_hex(a, 8, hex_a)
-// 	bn254.BN_from_hex(b, 8, hex_b)
-// 	bn254.BN_from_hex(p, 8, hex_p)
-// 	bn254.BN_from_hex(p_inv_neg, 8, hex_p_inv_neg)
-// 	bn254.BN_from_hex(p_one_sqr, 8, hex_p_one_sqr)
-
-// 	bn254.BN_print(" a = ", a, 8)
-// 	bn254.BN_print(" b = ", b, 8)
-// 	bn254.BN_print(" p = ", p, 8)
-
-// 	bn254.BN_mod_sqr_montgomery(r, a, p_one_sqr, p, p_inv_neg, 8)
-// 	bn254.BN_print(" a^2 (mod p) = ", r, 8)
-
-// 	bn254.BN_from_hex(n, 8, hex_n)
-// 	bn254.BN_from_hex(n_inv_neg, 8, hex_n_inv_neg)
-// 	bn254.BN_from_hex(n_one_sqr, 8, hex_n_one_sqr)
-
-// 	bn254.BN_print(" n = ", n, 8)
-
-// 	bn254.BN_mod_mul_montgomery(r, a, b, n_one_sqr, n, n_inv_neg, 8)
-// 	bn254.BN_print(" a * b (mod n) = ", r, 8)
-
-// 	bn254.BN_mod_sqr_montgomery(r, a, n_one_sqr, n, n_inv_neg, 8)
-// 	bn254.BN_print(" a^2 (mod n) = ", r, 8)
-// }
-
-func test_fn() {
-	hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
-	hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
-	a := make([]uint32, 8)
-	b := make([]uint32, 8)
-	r := make([]uint32, 8)
-	bn254.BN_from_hex(a, 8, hex_a)
-	bn254.BN_from_hex(b, 8, hex_b)
-	bn254.BN_print(" a = ", a, 8)
-	bn254.BN_print(" b = ", b, 8)
-	bn254.BN_print(" n = ", bn254.BN254_n[:], 8)
-
-	bn254.FN_from_hex(a, hex_a)
-	bn254.FN_from_hex(b, hex_b)
-	bn254.FN_add(r, a, b)
-	bn254.FN_get_BN(r, r)
-	bn254.BN_print(" a + b (mod n) = ", r, 8)
-
-	bn254.FN_sub(r, a, b)
-	bn254.FN_get_BN(r, r)
-	bn254.BN_print(" a - b (mod n) = ", r, 8)
-
-	bn254.FN_sub(r, b, a)
-	bn254.FN_get_BN(r, r)
-	bn254.BN_print(" b - a (mod n) = ", r, 8)
-
-	bn254.FN_neg(r, a)
-	bn254.FN_get_BN(r, r)
-	bn254.BN_print(" -a (mod p) = ", r, 8)
-
-	bn254.FN_mul(r, a, b)
-	bn254.FN_get_BN(r, r)
-	bn254.BN_print(" a * b (mod n) = ", r, 8)
-
-	bn254.FN_sqr(r, a)
-	bn254.FN_get_BN(r, r)
-	bn254.BN_print(" a^2 (mod n) = ", r, 8)
-
-	var a_fn bn254.FN_t
-	for i := 0; i < len(a); i++ {
-		a_fn[i] = a[i]
-	}
-	var r_fn bn254.FN_t
-	for i := 0; i < len(r); i++ {
-		r_fn[i] = r[i]
-	}
-	//bn254.FN_inv(r_fn, a_fn)
-	bn254.FN_get_bn(r, r)
-	bn254.BN_print(" a^-1 (mod n) = ", r, 8)
-}
-
 func main() {
-	test_bn()
-	test_bn_mod()
-	test_bn_barrett()
-	test_fn()
-	//test_bn_montgomery()
+	fmt.Printf("test_bn......\n")
+	var hex_a_bn string
+	var hex_b_bn string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_bn) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	fmt.Println("b=")
+	fmt.Scanln(&hex_b_bn) //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	test_bn(hex_a_bn, hex_b_bn)
 
-	test_fp()              //√
-	test_point()           //√
-	test_point_multi_mul() //√
-	test_poly()            //√
-	test_fft()             //√
+	fmt.Printf("test_bn_mod......\n")
+	var hex_a_bn_mod string
+	var hex_b_bn_mod string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_bn_mod) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	fmt.Println("b=")
+	fmt.Scanln(&hex_b_bn_mod) //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	test_bn_mod(hex_a_bn_mod, hex_b_bn_mod)
+
+	fmt.Printf("test_bn_barrett......\n")
+	var hex_a_bn_barrett string
+	var hex_b_bn_barrett string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_bn_barrett) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	fmt.Println("b=")
+	fmt.Scanln(&hex_b_bn_barrett) //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	test_bn_barrett(hex_a_bn_barrett, hex_b_bn_barrett)
+
+	fmt.Printf("test_bn_montgomery......\n")
+	var hex_a_bn_montgomery string
+	var hex_b_bn_montgomery string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_bn_montgomery) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	fmt.Println("b=")
+	fmt.Scanln(&hex_b_bn_montgomery) //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	test_bn_montgomery(hex_a_bn_montgomery, hex_b_bn_montgomery)
+
+	fmt.Printf("test_fn......\n")
+	var hex_a_fn string
+	var hex_b_fn string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_fn) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	fmt.Println("b=")
+	fmt.Scanln(&hex_b_fn) //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	test_fn(hex_a_fn, hex_b_fn)
+
+	fmt.Printf("test_fp......\n")
+	var hex_a_fp string
+	var hex_b_fp string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_fp) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	fmt.Println("b=")
+	fmt.Scanln(&hex_b_fp)       //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	test_fp(hex_a_fp, hex_b_fp) //√
+
+	fmt.Printf("test_point......\n")
+	var hex_a_point string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_point) //hex_a_point := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	test_point(hex_a_point)  //√
+
+	fmt.Printf("test_point_multi_mul......\n")
+	var a_point_multi_mul [8]bn254.FN_t //1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64
+	fmt.Printf("请输入......\n")           //需要一个一个打进去
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			fmt.Scanln(&a_point_multi_mul[i][j])
+		}
+	}
+	test_point_multi_mul(a_point_multi_mul) //√
+
+	fmt.Printf("test_poly......\n")
+	var hex_a_poly string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_poly) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	test_poly(hex_a_poly)   //√
+
+	fmt.Printf("test_fft......\n")
+	test_fft() //√ //无输入
 }

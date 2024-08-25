@@ -1,5 +1,6 @@
 ## GBN:椭圆曲线BN族的GO语言库重写
-该库是对Zkrypt是一个开源的C语言零知识证明算法库的go语言重写，原C++项目链接：https://github.com/guanzhi/zkrypt
+该项目是针对零知识证明软件核心代码部分的零知识证明算法库的go语言重写。
+原项目使用的是Zkrypt，该库是一个开源的C语言零知识证明算法库，原C++项目链接：https://github.com/guanzhi/zkrypt
 ### 项目介绍
 本项目旨在完成对零知识证明算法go语言的扩张，填补BN椭圆曲线族在go语言领域的空白。
 在本项目中，我们完成了有关BN曲线上的几乎所有运算，包括但不限于加、减、乘、除、求模逆等等。
@@ -11,7 +12,8 @@
 ```
 go mod tidy
 ```
-之后可以像C++的include文件一样，采用以下命令即可完成头文件的引入：
+由于该库已经上载到了Go包管理网站：https://pkg.go.dev/,所以mod可以自主下载。
+在命令完成之后，可以像C++的include指令一样，采用以下命令即可完成头文件的引入：
 ```
 import https://github.com/Azzzting/gbn/include
 ```

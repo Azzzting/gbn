@@ -20,5 +20,26 @@ go mod tidy
 import https://github.com/Azzzting/gbn/include
 ```
 示例代码：
+```
+func main() {
+	fmt.Printf("test_bn......\n")
+	var hex_a_bn string
+	var hex_b_bn string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_bn) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	fmt.Println("b=")
+	fmt.Scanln(&hex_b_bn) //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	test_bn(hex_a_bn, hex_b_bn)
+
+	fmt.Printf("test_bn_mod......\n")
+	var hex_a_bn_mod string
+	var hex_b_bn_mod string
+	fmt.Println("a=")
+	fmt.Scanln(&hex_a_bn_mod) //hex_a := "0af03617f5b2f6001695f8442ad230609b9e97edf973850f543305a01448ae2f"
+	fmt.Println("b=")
+	fmt.Scanln(&hex_b_bn_mod) //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
+	test_bn_mod(hex_a_bn_mod, hex_b_bn_mod)
+  ·······
+```
 
 完成上述操作就可以愉快的使用啦！

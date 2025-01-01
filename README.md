@@ -20,7 +20,7 @@ go mod tidy
 import https://github.com/Azzzting/gbn/include
 ```
 示例代码：
-```
+```go
 func main() {
 	fmt.Printf("test_bn......\n")
 	var hex_a_bn string
@@ -40,6 +40,7 @@ func main() {
 	fmt.Scanln(&hex_b_bn_mod) //hex_b := "10ff7104c71c1ff1a1d9ccf1c7fdc30966466ea4eaaab2e6b0ecccd3ef46586d"
 	test_bn_mod(hex_a_bn_mod, hex_b_bn_mod)
   ·······
+}
 ```
 
 完成上述操作就可以愉快的使用啦！

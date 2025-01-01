@@ -19,4 +19,6 @@ go mod tidy
 ```
 import https://github.com/Azzzting/gbn/include
 ```
+示例代码：
+
 完成上述操作就可以愉快的使用啦！

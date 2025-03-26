@@ -202,9 +202,7 @@ func test_fn(hex_a string, hex_b string) {
 	for i := 0; i < len(r); i++ {
 		r_fn[i] = r[i]
 	}
-	bn254.FN_inv(&r_fn, a_fn)
-	bn254.FN_get_bn(r_fn[:], r_fn[:])
-	bn254.BN_print(" a^-1 (mod n) = ", r_fn[:], 8)
+	
 }
 
 func test_fp(hex_a string, hex_b string) {

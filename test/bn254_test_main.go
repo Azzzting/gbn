@@ -584,7 +584,6 @@ func test_fft() {
 func main() {
 	fmt.Printf("begin testing......\n")
 	fmt.Printf("test_bn......\n")
-	fmt.Printf("test_bn......\n")
 	var hex_a_bn string
 	var hex_b_bn string
 	fmt.Println("a=")

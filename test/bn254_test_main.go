@@ -60,6 +60,7 @@ func test_bn_mod(hex_a string, hex_b string) {
 
 	bn254.BN_mod_neg(r, a, n, 8)
 	bn254.BN_print(" -a (mod n) = ", r, 8)
+
 }
 
 func test_bn_barrett(hex_a string, hex_b string) {
@@ -202,6 +203,8 @@ func test_fn(hex_a string, hex_b string) {
 	for i := 0; i < len(r); i++ {
 		r_fn[i] = r[i]
 	}
+	//bn254.FN_inv(&r_fn, a_fn)
+	//bn254.FN_get_bn(r_fn[:], r_fn[:])
 	
 }
 
@@ -579,6 +582,8 @@ func test_fft() {
 }
 
 func main() {
+	fmt.Printf("begin testing......\n")
+	fmt.Printf("test_bn......\n")
 	fmt.Printf("test_bn......\n")
 	var hex_a_bn string
 	var hex_b_bn string

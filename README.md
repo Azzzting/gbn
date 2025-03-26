@@ -19,6 +19,8 @@ go mod tidy
 ```
 import https://github.com/Azzzting/gbn/include
 ```
+完成上述操作就可以愉快的使用啦！🎉
+
 示例代码：
 ```go
 func main() {
@@ -42,8 +44,19 @@ func main() {
   ·······
 }
 ```
+### 测试结果 :white_check_mark:
+测试图示：
++ 大数运算：
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/10a8729a-0512-47d7-abe5-a2b7c0a21591" />
 
-完成上述操作就可以愉快的使用啦！🎉
++ 蒙哥马利模乘：
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/81d5affa-3a5c-4677-810c-a48648c3017c" />
+
++ 标量域运算：
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/9eb5deb6-06bd-4485-bb5e-aee2d2964796" />
+
++ 快速傅里叶变换：
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/728dcdff-2c68-47cd-80bb-42cdc489e136" />
 
 ### 代码贡献🤝
 我们欢迎社区的贡献！如果你发现问题或者有任何优化建议，欢迎提交Issue或者Fork并提交PR。🚀

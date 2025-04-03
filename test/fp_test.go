@@ -83,3 +83,4 @@ func Test_fp(t *testing.T) {
 	bn254.FP_get_BN(r_fp[:], r_fp[:])
 	result = format_fp(r, 8)
 }
+// 1
